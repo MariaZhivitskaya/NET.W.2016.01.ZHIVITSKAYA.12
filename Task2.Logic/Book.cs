@@ -115,8 +115,8 @@ namespace Task2.Logic
         /// <param name="language">The language.</param>
         /// <param name="pagesNumber">The pages number.</param>
         /// <param name="edition">The edition.</param>
-        public Book(string author, string title, string language,
-            int pagesNumber, int edition)
+        public Book(string author = "Not specified", string title = "Not specified", 
+            string language = "Not specified", int pagesNumber = 10, int edition = 10)
         {
             Author = author;
             Title = title;
@@ -178,6 +178,15 @@ namespace Task2.Logic
 
                 return hashCode;
             }
+        }
+
+        public override string ToString()
+        {
+            return "    Author: " + Author +
+                   "\n    Title: " + Title +
+                   "\n    Language: " + Language +
+                   "\n    Pages number: " + PagesNumber +
+                   "\n    Edition: " + Edition;
         }
 
         /// <summary>

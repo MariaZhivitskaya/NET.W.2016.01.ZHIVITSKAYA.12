@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Task2.Logic
 {
-    class BookListService<T> where T : Book
+    public class BookListService<T> : IEnumerable<Book> where T : Book
     {
         /// <summary>
         /// A property for the book list.
         /// </summary>
         public List<Book> BookList { get; } = new List<Book>();
+
+        /// <summary>
+        /// Gets the number of elements in the list.
+        /// </summary>
+        /// <returns>Returns tne number of elements.</returns>
+        public int Count => BookList.Count;
 
         /// <summary>
         /// Adds the book to the list.
@@ -32,6 +37,9 @@ namespace Task2.Logic
         /// <summary>
         /// Removes the book from the list.
         /// </summary>
+        /// <exception cref="ArgumentException">
+        /// Thrown if there is no such book in the list.
+        /// </exception>
         /// <param name="book">The book.</param>
         public void Remove(Book book)
         {
@@ -57,6 +65,47 @@ namespace Task2.Logic
                 for (int j = 0; j < BookList.Count - i - 1; j++)
                     if (iComparer.Compare(BookList[j], BookList[j + 1]) > 0)
                         SwapElementsByIndexes(j, j + 1);
+        }
+
+        /// <summary>
+        /// Finds books by a specified tag.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown if the list is empty.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if there is no such book in the list.
+        /// </exception>
+        /// <param name="comparison"></param>
+        /// <param name="criteria">The criteria book.</param>
+        /// <returns>Returns the list of books.</returns>
+        public List<Book> FindBookByTag(Comparison<Book> comparison, Book criteria)
+        {
+            if (IsEmpty())
+                throw new ArgumentOutOfRangeException("List is empty!");
+
+            var resultList = BookList.Where(t => comparison(criteria, t) == 0).ToList();
+
+            if (resultList.Count == 0)
+                throw new ArgumentException("No such book in the list!");
+
+            return resultList;
+        }
+
+        /// <summary>
+        /// Gets the book with a specified index.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <returns>Returns the book.</returns>
+        public Book this[int index]
+        {
+            get
+            {
+                if (index > Count - 1 || index < 0)
+                    throw new ArgumentOutOfRangeException("Wrong index!");
+
+                return BookList[index];
+            }
         }
 
         /// <summary>
@@ -92,5 +141,21 @@ namespace Task2.Logic
             BookList[index1] = BookList[index2];
             BookList[index2] = tmp;
         }
+
+        /// <summary>
+        /// Gets the enumerator for the list.
+        /// </summary>
+        /// <returns>Returns the next element.</returns>
+        public IEnumerator<Book> GetEnumerator()
+        {
+            for (int i = 0; i < Count; i++)
+                yield return BookList[i];
+        }
+
+        /// <summary>
+        /// Gets the enumerator for the list.
+        /// </summary>
+        /// <returns>Returns the next element.</returns>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
